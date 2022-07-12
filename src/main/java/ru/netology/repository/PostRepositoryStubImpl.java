@@ -37,7 +37,7 @@ public class PostRepositoryStubImpl implements PostRepository {
     @Override
     public Post save(Post post) {
         final var id = post.getId();
-        if (id != START_ID && !posts.containsKey(post.getId())) throw new NotFoundException();
+        if ((id != START_ID && !posts.containsKey(post.getId())) || posts.get(id).isDeleted()) throw new NotFoundException();
         if (id == START_ID) {
             post.setId(counter);
             counter++;
@@ -48,6 +48,6 @@ public class PostRepositoryStubImpl implements PostRepository {
 
     @Override
     public void removeById(long id) {
-        posts.remove(id);
+        if (posts.containsKey(id)) posts.get(id).setDeleted(true);
     }
 }
