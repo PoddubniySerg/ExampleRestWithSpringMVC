@@ -4,6 +4,9 @@ public class Post {
     private long id;
     private String content;
 
+//    исключаем поле из сериализации обекта Post в Json путем добавления transient
+    private transient boolean isDeleted;
+
     public Post() {
     }
 
@@ -26,5 +29,13 @@ public class Post {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public boolean isDeleted() {
+        return isDeleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        isDeleted = deleted;
     }
 }
