@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Repository
 public class PostRepositoryStubImpl implements PostRepository {
@@ -15,11 +16,11 @@ public class PostRepositoryStubImpl implements PostRepository {
     private static final long START_ID = 0L;
 
     private final ConcurrentMap<Long, Post> posts;
-    private long counter;
+    private final AtomicLong counter;
 
     public PostRepositoryStubImpl() {
         this.posts = new ConcurrentHashMap<>();
-        this.counter = START_ID + 1;
+        this.counter = new AtomicLong(START_ID + 1);
     }
 
     @Override
@@ -29,9 +30,7 @@ public class PostRepositoryStubImpl implements PostRepository {
 
     @Override
     public Optional<Post> getById(long id) {
-        return posts.values().stream()
-                .filter(post -> id == post.getId())
-                .findFirst();
+        return posts.containsKey(id) ? Optional.of(posts.get(id)) : Optional.empty();
     }
 
     @Override
@@ -39,8 +38,7 @@ public class PostRepositoryStubImpl implements PostRepository {
         final var id = post.getId();
         if (id != START_ID && !posts.containsKey(post.getId())) throw new NotFoundException();
         if (id == START_ID) {
-            post.setId(counter);
-            counter++;
+            post.setId(counter.getAndIncrement());
         }
         posts.put(post.getId(), post);
         return posts.get(post.getId());
