@@ -11,14 +11,14 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Repository
-public class PostRepositoryStubImpl implements PostRepository {
+public class PostRepositoryImpl implements PostRepository {
 
     private static final long START_ID = 0L;
 
     private final ConcurrentMap<Long, Post> posts;
     private final AtomicLong counter;
 
-    public PostRepositoryStubImpl() {
+    public PostRepositoryImpl() {
         this.posts = new ConcurrentHashMap<>();
         this.counter = new AtomicLong(START_ID + 1);
     }
@@ -46,6 +46,8 @@ public class PostRepositoryStubImpl implements PostRepository {
 
     @Override
     public void removeById(long id) {
-        posts.remove(id);
+        if (posts.containsKey(id)) {
+            posts.remove(id);
+        } else throw new NotFoundException();
     }
 }
